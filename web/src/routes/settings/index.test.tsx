@@ -45,6 +45,13 @@ vi.mock('@/hooks/useTheme', () => ({
     ],
 }))
 
+vi.mock('@/hooks/useNotificationSound', () => ({
+    useNotificationSound: () => ({
+        notificationSoundEnabled: false,
+        setNotificationSoundEnabled: vi.fn(),
+    }),
+}))
+
 // Mock languages
 vi.mock('@/lib/languages', () => ({
     getElevenLabsSupportedLanguages: () => [
@@ -77,12 +84,21 @@ describe('SettingsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         // Mock localStorage
+        const store = new Map<string, string>()
         const localStorageMock = {
-            getItem: vi.fn(() => 'en'),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
+            getItem: vi.fn((key: string) => (store.has(key) ? store.get(key)! : null)),
+            setItem: vi.fn((key: string, value: string) => {
+                store.set(key, value)
+            }),
+            removeItem: vi.fn((key: string) => {
+                store.delete(key)
+            }),
+            clear: vi.fn(() => {
+                store.clear()
+            }),
         }
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock, configurable: true })
+        window.localStorage.setItem('hapi-voice-lang', 'en')
     })
 
     it('renders the About section', () => {
@@ -139,5 +155,10 @@ describe('SettingsPage', () => {
         renderWithProviders(<SettingsPage />)
         expect(screen.getAllByText('Terminal Font Size').length).toBeGreaterThanOrEqual(1)
         expect(screen.getAllByText('13px').length).toBeGreaterThanOrEqual(1)
+    })
+
+    it('renders the completion sound setting', () => {
+        renderWithProviders(<SettingsPage />)
+        expect(screen.getAllByText('Completion Sound').length).toBeGreaterThanOrEqual(1)
     })
 })

@@ -10,6 +10,7 @@ import { useSSE } from '@/hooks/useSSE'
 import { useSyncingState } from '@/hooks/useSyncingState'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
 import { useVisibilityReporter } from '@/hooks/useVisibilityReporter'
+import { isNotificationSoundEnabled, playNotificationSound } from '@/hooks/useNotificationSound'
 import { queryKeys } from '@/lib/query-keys'
 import { AppContextProvider } from '@/lib/app-context'
 import { fetchLatestMessages } from '@/lib/message-window-store'
@@ -227,6 +228,10 @@ function AppInner() {
 
     const handleSseEvent = useCallback(() => {}, [])
     const handleToast = useCallback((event: ToastEvent) => {
+        if (isNotificationSoundEnabled()) {
+            void playNotificationSound()
+        }
+
         addToast({
             title: event.data.title,
             body: event.data.body,

@@ -5,6 +5,7 @@ import { getElevenLabsSupportedLanguages, getLanguageDisplayName, type Language 
 import { getFontScaleOptions, useFontScale, type FontScale } from '@/hooks/useFontScale'
 import { getTerminalFontSizeOptions, useTerminalFontSize, type TerminalFontSize } from '@/hooks/useTerminalFontSize'
 import { useAppearance, getAppearanceOptions, type AppearancePreference } from '@/hooks/useTheme'
+import { useNotificationSound } from '@/hooks/useNotificationSound'
 import { PROTOCOL_VERSION } from '@hapi/protocol'
 
 const locales: { value: Locale; nativeLabel: string }[] = [
@@ -87,6 +88,7 @@ export default function SettingsPage() {
     const { fontScale, setFontScale } = useFontScale()
     const { terminalFontSize, setTerminalFontSize } = useTerminalFontSize()
     const { appearance, setAppearance } = useAppearance()
+    const { notificationSoundEnabled, setNotificationSoundEnabled } = useNotificationSound()
 
     // Voice language state - read from localStorage
     const [voiceLanguage, setVoiceLanguage] = useState<string | null>(() => {
@@ -460,6 +462,32 @@ export default function SettingsPage() {
                                     })}
                                 </div>
                             )}
+                        </div>
+                    </div>
+
+                    {/* Notifications section */}
+                    <div className="border-b border-[var(--app-divider)]">
+                        <div className="px-3 py-2 text-xs font-semibold text-[var(--app-hint)] uppercase tracking-wide">
+                            {t('settings.notifications.title')}
+                        </div>
+                        <div className="flex items-center justify-between gap-3 px-3 py-3">
+                            <div className="min-w-0">
+                                <div className="text-[var(--app-fg)]">{t('settings.notifications.sound')}</div>
+                                <div className="mt-0.5 text-xs text-[var(--app-hint)]">
+                                    {t('settings.notifications.soundDescription')}
+                                </div>
+                            </div>
+                            <label className="relative inline-flex h-5 w-9 shrink-0 items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={notificationSoundEnabled}
+                                    onChange={(event) => setNotificationSoundEnabled(event.target.checked)}
+                                    className="peer sr-only"
+                                    aria-label={t('settings.notifications.sound')}
+                                />
+                                <span className="absolute inset-0 rounded-full bg-[var(--app-border)] transition-colors peer-checked:bg-[var(--app-link)]" />
+                                <span className="absolute left-0.5 h-4 w-4 rounded-full bg-[var(--app-bg)] transition-transform peer-checked:translate-x-4" />
+                            </label>
                         </div>
                     </div>
 

@@ -14,12 +14,21 @@ function renderWithProviders(ui: React.ReactElement) {
 describe('LoginPrompt', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        const store = new Map<string, string>()
         const localStorageMock = {
-            getItem: vi.fn(() => 'en'),
-            setItem: vi.fn(),
-            removeItem: vi.fn(),
+            getItem: vi.fn((key: string) => (store.has(key) ? store.get(key)! : null)),
+            setItem: vi.fn((key: string, value: string) => {
+                store.set(key, value)
+            }),
+            removeItem: vi.fn((key: string) => {
+                store.delete(key)
+            }),
+            clear: vi.fn(() => {
+                store.clear()
+            }),
         }
-        Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock, configurable: true })
+        window.localStorage.setItem('hapi-lang', 'en')
     })
 
     it('does not clear first hub URL edit when hub URL required', async () => {
