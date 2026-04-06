@@ -9,6 +9,7 @@ import { useServerUrl } from '@/hooks/useServerUrl'
 import { useSSE } from '@/hooks/useSSE'
 import { useSyncingState } from '@/hooks/useSyncingState'
 import { usePushNotifications } from '@/hooks/usePushNotifications'
+import { useViewportHeight } from '@/hooks/useViewportHeight'
 import { useVisibilityReporter } from '@/hooks/useVisibilityReporter'
 import { isNotificationSoundEnabled, playNotificationSound } from '@/hooks/useNotificationSound'
 import { queryKeys } from '@/lib/query-keys'
@@ -58,6 +59,9 @@ function AppInner() {
         tg?.expand()
         initializeTheme()
     }, [])
+
+    // Track visual viewport height for mobile keyboard avoidance (see useViewportHeight.ts)
+    useViewportHeight()
 
     useEffect(() => {
         const preventDefault = (event: Event) => {
